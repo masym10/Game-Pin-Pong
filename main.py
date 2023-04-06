@@ -2,7 +2,7 @@ from pygame import*
 
 #display setting
 window = display.set_mode((700, 500))
-window.fill((255, 255, 0))
+
 
 #class
 class GameSprite(sprite.Sprite):
@@ -17,6 +17,9 @@ class GameSprite(sprite.Sprite):
     def reset(self):
         window.blit(self.image, (self.rect.x, self.rect.y))
 
+    def update_B(self):
+        self.rect.x += self.speed
+        self.rect.y += self.speed
 class Player(GameSprite):
     def update_L(self):
         keys = key.get_pressed()
@@ -30,9 +33,9 @@ class Player(GameSprite):
         keys = key.get_pressed()
 
         if keys[K_UP]:
-            self.rect.y += self.speed
-        if keys[K_DOWN]:
             self.rect.y -= self.speed
+        if keys[K_DOWN]:
+            self.rect.y += self.speed
       
 FPS = 60
 game = True
@@ -41,19 +44,43 @@ clock  = time.Clock()
 player1 = Player("player.png",  20, 200, 50, 200, 5)
 player2 = Player("player.png", 500, 350, 50, 200, 5)
 
-ball = GameSprite("ball.png", 200,200, 50, 50, 2)
+ball = GameSprite("ball.png", 150,150, 50, 50, 2)
 
 #game while
 while game:
-    for event in event.get():
-        if event.type == QUIT:
+    for e in event.get():
+        if e.type == QUIT:
             game = False
 
+    window.fill((255, 255, 255))
     player1.reset()
     player2.reset()
+    ball.reset()
 
     player1.update_L()
     player2.update_R()
+    ball.update_B()
+    #Ifs
+    if sprite.collide_rect(player1, ball):
+        ball.rect.x += ball.speed
+        ball.rect.y += ball.speed
 
+    if sprite.collide_rect(player2, ball ):
+        ball.rect.x -= ball.speed
+        ball.rect.y -= ball.speed
+
+    if ball.rect.x >= 500:
+        ball.rect.x -= ball.speed
+
+    if ball.rect.y >= 700:
+        ball.rect.y -= ball.speed
+
+    if ball.rect.x >= 0:
+        ball.rect.x += ball.speed
+
+    if ball.rect.y >= 0:
+        ball.rect.y += ball.speed    
+    
+    
     display.update()
     clock.tick(FPS) 
